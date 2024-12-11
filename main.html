@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Calculator</title>
+    <link rel="icon" href="icons.png" type="image/x-icon">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: linear-gradient(to right, #f8f9fa, #e9ecef);
+            color: #343a40;
+        }
+        h1 {
+            text-align: center;
+            color: #495057;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .subject-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .grades-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        .grades-container input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+        }
+        .result {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #212529;
+        }
+        #add-subject-btn {
+            display: block;
+            margin: 20px auto;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Калькулятор академической оценки</h1>
+    <div id="subjects"></div>
+    <button id="add-subject-btn" onclick="addSubject()">Добавить предмет</button>
+
+    <script>
+        let subjectCount = 0;
+
+        function addSubject() {
+            subjectCount++;
+            const subjectContainer = document.createElement('div');
+            subjectContainer.classList.add('subject-container');
+
+            subjectContainer.innerHTML = `
+                <div class="subject-header">
+                    <input type="text" placeholder="Название предмета" id="subject-name-${subjectCount}">
+                    <button onclick="calculateGrade(${subjectCount})">Рассчитать оценку</button>
+                </div>
+                <div class="grades-container" id="grades-container-${subjectCount}">
+                    ${Array.from({ length: 15 }, (_, i) => `
+                        <input type="number" placeholder="Неделя ${i + 1}" id="subject-${subjectCount}-week-${i + 1}" min="0" max="100">
+                    `).join('')}
+                </div>
+                <div class="result" id="result-${subjectCount}">Общая оценка: 0</div>
+            `;
+
+            document.getElementById('subjects').appendChild(subjectContainer);
+        }
+
+        function calculateGrade(subjectId) {
+            let totalGrade = 0;
+            for (let i = 1; i <= 15; i++) {
+                const gradeInput = document.getElementById(`subject-${subjectId}-week-${i}`);
+                const gradeValue = parseInt(gradeInput.value) || 0;
+                totalGrade += gradeValue;
+            }
+
+            const gradingPeriods = Math.min(60, (totalGrade / 15) * 60 / 100); // Max 60 points for grading periods
+            const examScore = prompt("Enter exam score (out of 40):", 0);
+            const examPoints = Math.min(40, parseInt(examScore) || 0);
+
+            const finalGrade = gradingPeriods + examPoints;
+            document.getElementById(`result-${subjectId}`).textContent = `Total Grade: ${finalGrade.toFixed(2)} / 100`;
+        }
+    </script>
+</body>
+</html>
